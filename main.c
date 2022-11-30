@@ -315,7 +315,7 @@ int main(int argc,
     // Uncompress the key using https://github.com/Mbed-TLS/mbedtls/pull/6282
 
     mbedtls_ecp_point_init(&pt);
-    mbedtls_mpi_read_binary_le( &(pt.X), compKey + 1, sizeof(compKey) - 1 );
+    mbedtls_mpi_read_binary( &(pt.X), compKey + 1, sizeof(compKey) - 1 );
 
     status = mbedtls_ecp_sw_derive_y(&mbedtls_pk_ec(ctx_verify)->grp, &(pt.X), &(pt.Y), 0);
     if (status != PSA_SUCCESS)
@@ -325,8 +325,8 @@ int main(int argc,
     }
 
     output[0] = 0x04;
-    memcpy(output + 1, pt.X.p, 32);
-    memcpy(output + 33, pt.Y.p, 32);
+    mbedtls_mpi_write_binary(&(pt.X), output + 1, 32);
+    mbedtls_mpi_write_binary(&(pt.Y), output + 33, 32);
     len = 65;
 
     printf("Uncompressed key according to mbedtls_ecp_sw_derive_y(): ");
